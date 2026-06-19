@@ -3365,11 +3365,23 @@
 
             const msgDiv = document.getElementById('quiz-result-msg');
 
+            // ↓↓↓ 追加：音声要素を取得 ↓↓↓
+            const correctSound = document.getElementById('sound-correct');
+            const wrongSound = document.getElementById('sound-wrong');
+
             if (isCorrect) {
+                // ↓↓↓ 追加：正解音を鳴らす ↓↓↓
+                correctSound.currentTime = 0;
+                correctSound.play().catch(e => console.log(e));
+
                 clickedBtn.classList.add('correct');
                 msgDiv.innerText = "正解";
                 msgDiv.className = 'msg-correct';
             } else {
+                // ↓↓↓ 追加：不正解音を鳴らす ↓↓↓
+                wrongSound.currentTime = 0;
+                wrongSound.play().catch(e => console.log(e));
+
                 clickedBtn.classList.add('wrong');
                 msgDiv.innerHTML = `不正解<br><span style="color:#333; font-size:1rem; font-weight:normal;">正解は: <b>${currentAnswer.meaning}</b></span>`;
                 msgDiv.className = 'msg-wrong';
@@ -3382,7 +3394,29 @@
             }
             document.getElementById('next-quiz-btn').style.display = 'block';
         }
+        // ----------------------------------------
+        // 4. 単語カードを開いたときの音声連動
+        // ----------------------------------------
+        // ----------------------------------------
+        // 4. 単語カードを開いたときの音声連動
+        // ----------------------------------------
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function () {
+                if (this.classList.contains('open')) {
+                    const openSound = document.getElementById('sound-open');
+                    openSound.currentTime = 0;
+
+                    // play()が失敗した時に、理由をポップアップでお知らせする
+                    openSound.play().catch(e => {
+                        alert("音が鳴らない原因: " + e.message);
+                    });
+                }
+            });
+        });
     </script>
+    <audio id="sound-open" src="open.mp3" preload="auto"></audio>
+    <audio id="sound-correct" src="correct.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="wrong.mp3" preload="auto"></audio>
 </body>
 
 </html>
