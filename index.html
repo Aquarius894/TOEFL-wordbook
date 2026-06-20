@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOEFL対策用英単語</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         body {
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
@@ -307,7 +308,7 @@
         .example-en {
             font-weight: 500;
             margin-bottom: 0.5rem;
-            color: #2c3e50;
+            color: #616161;
         }
 
         .example-ja {
@@ -679,13 +680,159 @@
             transform: scale(1.3);
             /* チェックボックスを少し大きく */
         }
+
+        /* ----------------------------------------
+        ヘッダーの収録語数バッジのデザイン
+        ---------------------------------------- */
+        #word-count-badge {
+            font-size: 1rem;
+            font-weight: normal;
+            color: #bdc3c7;
+            /* メインの白文字より一歩引いた薄いグレー */
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* ----------------------------------------
+    ダークモード
+---------------------------------------- */
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode header {
+            background-color: #000000;
+        }
+
+        body.dark-mode .mode-tabs {
+            background-color: #1e1e1e;
+            border-bottom: 2px solid #333;
+        }
+
+        body.dark-mode .mode-tab {
+            color: #bbbbbb;
+        }
+
+        body.dark-mode .mode-tab.active {
+            color: #4dabff;
+            border-bottom-color: #4dabff;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode #quiz-area,
+        body.dark-mode .modal-content {
+            background-color: #191919;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .word,
+        body.dark-mode #quiz-question-word {
+            color: #ffffff;
+        }
+
+        body.dark-mode .explanation,
+        body.dark-mode .example,
+        body.dark-mode #quiz-stats {
+            background-color: #222222;
+        }
+
+        body.dark-mode .example-en {
+
+            color: #d8d8d8;
+        }
+
+        body.dark-mode .example-ja {
+            color: #d8d8d8;
+        }
+
+        body.dark-mode .meaning {
+            color: #e84a4a;
+        }
+
+        body.dark-mode .filter-btn {
+            background-color: #1e1e1e;
+            color: #4dabff;
+            border-color: #4dabff;
+        }
+
+        body.dark-mode .filter-btn.active,
+        body.dark-mode .filter-btn:hover {
+            background-color: #4dabff;
+            color: #ffffff;
+        }
+
+        body.dark-mode #searchInput {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border-color: #444;
+        }
+
+        body.dark-mode #searchInput::placeholder {
+            color: #999;
+        }
+
+        body.dark-mode .quiz-choice-btn {
+            background-color: #2a2a2a;
+            color: #ffffff;
+            border-color: #444;
+        }
+
+        body.dark-mode .quiz-choice-btn:hover:not(:disabled) {
+            background-color: #333;
+        }
+
+        body.dark-mode .sticky-controls {
+            background-color: #121212;
+            border-bottom-color: #333;
+        }
+
+        /* ----------------------------------------
+        ドラッグ＆ドロップ（並び替え）中のデザイン
+        ---------------------------------------- */
+        .sortable-ghost {
+            opacity: 0.4;
+            /* カードを半透明にする */
+            background-color: #e8f4fd;
+            /* 背景を薄い青に */
+            border: 2px dashed #3498db;
+            /* 青い点線で囲む */
+            transform: scale(0.98);
+            /* ほんの少し小さくする */
+        }
+
+        body.dark-mode .sortable-ghost {
+            background-color: #2a3b4c;
+            border-color: #4dabff;
+        }
+
+        /* ----------------------------------------
+        類語（Synonyms）バッジのデザイン
+        ---------------------------------------- */
+        .synonyms-badge {
+            display: inline-block;
+            font-size: 0.95rem;
+            color: #282828;
+            background-color: #e7e7e7;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* ダークモード用の配色 */
+        body.dark-mode .synonyms-badge {
+            background-color: #4a3b1c;
+            color: #f1c40f;
+        }
     </style>
 </head>
 
 <body>
 
     <header>
-        <h1>TOEFL対策用英単語</h1>
+        <h1>TOEFL対策用英単語<span id="word-count-badge">(全<span id="total-word-count">0</span>語)</span></h1>
         <div class="header-settings" onclick="toggleSettingsModal()">⚙</div>
     </header>
 
@@ -705,6 +852,13 @@
                 <label class="checkbox-label">
                     <input type="checkbox" id="setting-sound-effects" checked onchange="updateSettings()">
                     効果音（タップ音・正解音など）を鳴らす
+                </label>
+            </div>
+
+            <div class="setting-item" style="margin-top: 1.5rem;">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="setting-dark-mode" onchange="toggleDarkMode()">
+                    ダークモード
                 </label>
             </div>
 
@@ -2609,7 +2763,6 @@
                         </div>
                     </div>
                 </div>
-                ```
 
                 <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
                     <div class="pos-badge">名詞</div>
@@ -3221,7 +3374,24 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="card" data-pos="adjective" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">形容詞</div>
+                    <h2 class="word">feasible</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">実行可能な、実現可能な</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            計画や方法などが、現実的に実施できる状態を表します。possible よりも「条件的・現実的に可能」というニュアンスが強い単語です。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">The engineers are searching for a feasible solution to the energy
+                                crisis.</div>
+                            <div class="example-ja">技術者たちは、エネルギー危機に対する実現可能な解決策を探している。</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card" data-pos="adjective" onclick="this.classList.toggle('open')">
                     <div class="pos-badge">形容詞</div>
                     <h2 class="word">cognitive</h2>
@@ -3241,7 +3411,24 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">副詞</div>
+                    <h2 class="word">notably</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">特に、とりわけ、注目すべきことに</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            多くの要素の中でも、特に重要なものを強調する時に使います。論文やニュース記事で例を挙げる際によく用いられるフォーマルな副詞です。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">Several countries, notably Japan and Germany, invested heavily in
+                                renewable energy.</div>
+                            <div class="example-ja">いくつかの国々、とりわけ日本とドイツは、再生可能エネルギーに多額の投資を行った。</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
                     <div class="pos-badge">副詞</div>
                     <h2 class="word">conversely</h2>
@@ -3259,7 +3446,41 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="card" data-pos="verb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">動詞</div>
+                    <h2 class="word">compile</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">〜をまとめる、編集する、収集する</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            データ、情報、リストなどを「集めて整理する」という意味です。研究データや統計資料に関する文脈で頻出します。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">Researchers compiled data from several independent studies.</div>
+                            <div class="example-ja">研究者たちは複数の独立した研究からデータをまとめた。</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">名詞</div>
+                    <h2 class="word">deterioration</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">悪化、低下</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            健康、経済、環境、建物の状態などが「徐々に悪くなること」を意味します。フォーマルな文章で頻繁に登場します。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">Air pollution has led to the deterioration of public health in urban
+                                areas.</div>
+                            <div class="example-ja">大気汚染は都市部における公衆衛生の悪化を引き起こしている。</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
                     <div class="pos-badge">名詞</div>
                     <h2 class="word">hierarchy</h2>
@@ -5569,216 +5790,229 @@
                         </div>
                         <div class="example">
                             <div class="section-title">例文</div>
-                            <div class="example-en">
-                                <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">名詞</div>
-                                    <h2 class="word">implication</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">（予想される）影響、結果、含意</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            言葉の裏に隠された意味という意味のほか、TOEFLでは「ある発見や決定が将来もたらすであろう潜在的な影響・結果」というニュアンスで、論文の結論部分によく登場します。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">The discovery of water on Mars has profound
-                                                implications for the
-                                                search for extraterrestrial life.</div>
-                                            <div class="example-ja">火星での水の発見は、地球外生命の探査において極めて重要な意味（影響）を持っている。</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card" data-pos="verb" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">動詞</div>
-                                    <h2 class="word">verify</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">〜を検証する、証明する、確かめる</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            あるデータ、理論、または主張が「本当に正しいかどうか」を証拠を集めて確認することを意味します。confirm
-                                            よりも「調査して真実を確かめる」というプロセスが強調されます。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">Further experiments are needed to verify the
-                                                accuracy of the initial
-                                                findings.</div>
-                                            <div class="example-ja">最初の発見の正確さを検証（証明）するためには、さらなる実験が必要である。</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card" data-pos="adjective" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">形容詞</div>
-                                    <h2 class="word">prolific</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">多作の、多産の、豊かな</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            作家や芸術家が「非常に多くの作品を生み出す」ことや、動物・植物が「大量に繁殖する・実を結ぶ」様子を表現します。歴史上の人物の業績を称える文脈でよく登場します。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">He was a prolific writer, publishing over fifty
-                                                novels during his
-                                                lifetime.</div>
-                                            <div class="example-ja">彼は多作な作家であり、生涯に50冊以上の小説を出版した。</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card" data-pos="verb" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">動詞</div>
-                                    <h2 class="word">allocate</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">〜を割り当てる、配分する</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            資金、時間、資源、人員などを、特定の目的のために「計画的に分けて配る」こと。予算や資源の分配をテーマにしたアカデミックな文章やビジネス文脈で欠かせない動詞です。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">The government decided to allocate more funds to the
-                                                public
-                                                education system.</div>
-                                            <div class="example-ja">政府は、公教育システムにより多くの資金を割り当てることを決定した。</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card" data-pos="adjective" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">形容詞</div>
-                                    <h2 class="word">formidable</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">（敵や課題が）恐るべき、手強い、途方もない</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            対峙する相手の力量、あるいは解決すべき課題の規模が大きすぎて、圧倒されたり強い警戒心を抱かせたりする様子を表します。単に「難しい」というだけでなく、「立ち向かうのが非常に困難な強い壁」というニュアンスを含みます。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">Crossing the massive mountain range presented a
-                                                formidable
-                                                challenge
-                                                to the early explorers.</div>
-                                            <div class="example-ja">その巨大な山脈を越えることは、初期の探検家たちにとって恐るべき（手強い）試練となった。</div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="example-en">Small seismic waves were recorded shortly before the volcanic
+                                eruption.</div>
+                            <div class="example-ja">火山噴火の直前に、小さな地震波が記録された。</div>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">副詞</div>
-                                    <h2 class="word">meticulously</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">細心の注意を払って、几帳面に、極めて綿密に</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            細部（ディテール）を一切おろそかにせず、非常に丁寧かつ正確に作業を行う様子を指します。研究者が実験データを記録したり、考古学者が遺物を注意深く修復したりするような、正確性が命となる理系・文系双方の文脈で極めて出現率の高い重要副詞です。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">The historical archives were meticulously sorted and
-                                                cataloged
-                                                by
-                                                the library staff.</div>
-                                            <div class="example-ja">その歴史的古文書は、図書館の職員によって細心の注意を払って（綿密に）分類・目録化された。</div>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">名詞</div>
+                    <h2 class="word">implication</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">（予想される）影響、結果、含意</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            言葉の裏に隠された意味という意味のほか、TOEFLでは「ある発見や決定が将来もたらすであろう潜在的な影響・結果」というニュアンスで、論文の結論部分によく登場します。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">The discovery of water on Mars has profound
+                                implications for the
+                                search for extraterrestrial life.</div>
+                            <div class="example-ja">火星での水の発見は、地球外生命の探査において極めて重要な意味（影響）を持っている。</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-pos="verb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">動詞</div>
+                    <h2 class="word">verify</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">〜を検証する、証明する、確かめる</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            あるデータ、理論、または主張が「本当に正しいかどうか」を証拠を集めて確認することを意味します。confirm
+                            よりも「調査して真実を確かめる」というプロセスが強調されます。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">Further experiments are needed to verify the
+                                accuracy of the initial
+                                findings.</div>
+                            <div class="example-ja">最初の発見の正確さを検証（証明）するためには、さらなる実験が必要である。</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-pos="adjective" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">形容詞</div>
+                    <h2 class="word">prolific</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">多作の、多産の、豊かな</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            作家や芸術家が「非常に多くの作品を生み出す」ことや、動物・植物が「大量に繁殖する・実を結ぶ」様子を表現します。歴史上の人物の業績を称える文脈でよく登場します。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">He was a prolific writer, publishing over fifty
+                                novels during his
+                                lifetime.</div>
+                            <div class="example-ja">彼は多作な作家であり、生涯に50冊以上の小説を出版した。</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-pos="verb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">動詞</div>
+                    <h2 class="word">allocate</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">〜を割り当てる、配分する</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            資金、時間、資源、人員などを、特定の目的のために「計画的に分けて配る」こと。予算や資源の分配をテーマにしたアカデミックな文章やビジネス文脈で欠かせない動詞です。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">The government decided to allocate more funds to the
+                                public
+                                education system.</div>
+                            <div class="example-ja">政府は、公教育システムにより多くの資金を割り当てることを決定した。</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" data-pos="adjective" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">形容詞</div>
+                    <h2 class="word">formidable</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">（敵や課題が）恐るべき、手強い、途方もない</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            対峙する相手の力量、あるいは解決すべき課題の規模が大きすぎて、圧倒されたり強い警戒心を抱かせたりする様子を表します。単に「難しい」というだけでなく、「立ち向かうのが非常に困難な強い壁」というニュアンスを含みます。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">Crossing the massive mountain range presented a
+                                formidable
+                                challenge
+                                to the early explorers.</div>
+                            <div class="example-ja">その巨大な山脈を越えることは、初期の探検家たちにとって恐るべき（手強い）試練となった。</div>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">副詞</div>
-                                    <h2 class="word">unwittingly</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">知らずに、気づかずに、意識せずに</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            そのことについて全く知識がない状態で、あるいは意図しないうちに、結果としてある行動をとってしまっている様子を表します。inadvertently（不注意によって）と少し似ていますが、こちらは「自覚がないこと」に焦点が当てられます。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">Early settlers unwittingly introduced invasive plant
-                                                species
-                                                that
-                                                disrupted the local ecosystem.</div>
-                                            <div class="example-ja">初期の移住者たちは、知らず知らずのうちに外来植物の種を持ち込んでしまい、地域の生態系を混乱させた。
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">副詞</div>
+                    <h2 class="word">meticulously</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">細心の注意を払って、几帳面に、極めて綿密に</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            細部（ディテール）を一切おろそかにせず、非常に丁寧かつ正確に作業を行う様子を指します。研究者が実験データを記録したり、考古学者が遺物を注意深く修復したりするような、正確性が命となる理系・文系双方の文脈で極めて出現率の高い重要副詞です。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">The historical archives were meticulously sorted and
+                                cataloged
+                                by
+                                the library staff.</div>
+                            <div class="example-ja">その歴史的古文書は、図書館の職員によって細心の注意を払って（綿密に）分類・目録化された。</div>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">副詞</div>
-                                    <h2 class="word">vehemently</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">猛烈に、激しく</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            感情が強くこもっており、激しい態度で何かを行う様子を表します。TOEFLの講義や会話のパートで、ある学説や提案に対して「猛烈に反対する（vehemently
-                                            oppose）」といった表現でよく使われます。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">The local community vehemently opposed the
-                                                construction of the
-                                                chemical plant.</div>
-                                            <div class="example-ja">地域社会は、化学工場の建設に猛烈に反対した。</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
-                                    <div class="pos-badge">名詞</div>
-                                    <h2 class="word">deterrent</h2>
-                                    <div class="hint">▼ クリックして意味を表示 ▼</div>
-                                    <div class="details">
-                                        <div class="meaning">抑止力、妨害物</div>
-                                        <div class="explanation">
-                                            <div class="section-title">解説</div>
-                                            誰かが何か（特に犯罪や望ましくない行動）をするのを思いとどまらせるもののこと。厳しい罰則や防犯カメラ、あるいは国家間の軍事力などが「抑止力として機能する（act
-                                            as a
-                                            deterrent）」という形で使われます。
-                                        </div>
-                                        <div class="example">
-                                            <div class="section-title">例文</div>
-                                            <div class="example-en">The presence of security cameras acts as a strong
-                                                deterrent to
-                                                theft
-                                                in the store.</div>
-                                            <div class="example-ja">防犯カメラの存在は、店内での窃盗に対する強力な抑止力として機能する。</div>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">副詞</div>
+                    <h2 class="word">unwittingly</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">知らずに、気づかずに、意識せずに</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            そのことについて全く知識がない状態で、あるいは意図しないうちに、結果としてある行動をとってしまっている様子を表します。inadvertently（不注意によって）と少し似ていますが、こちらは「自覚がないこと」に焦点が当てられます。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">Early settlers unwittingly introduced invasive plant
+                                species
+                                that
+                                disrupted the local ecosystem.</div>
+                            <div class="example-ja">初期の移住者たちは、知らず知らずのうちに外来植物の種を持ち込んでしまい、地域の生態系を混乱させた。
                             </div>
                         </div>
+                    </div>
+                </div>
 
-
-                        <div id="quiz-area">
-                            <div id="quiz-stats">
-                                <div class="stats-text">
-                                    正答率: <span id="accuracy-text">0</span>%
-                                    <span class="stats-detail">(<span id="correct-count">0</span>問正解 / 全<span
-                                            id="total-count">0</span>問)</span>
-                                </div>
-                                <div class="gauge-container">
-                                    <div class="gauge-fill" id="accuracy-gauge"></div>
-                                </div>
-                            </div>
-                            <div>この単語の意味は？</div>
-                            <h2 id="quiz-question-word">Word</h2>
-                            <div id="quiz-question-pos">品詞</div>
-
-                            <div class="quiz-choices" id="quiz-choices-container">
-                            </div>
-
-                            <div id="quiz-result-msg"></div>
-                            <button id="next-quiz-btn" onclick="startNewQuiz()">次の問題へ</button>
+                <div class="card" data-pos="adverb" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">副詞</div>
+                    <h2 class="word">vehemently</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">猛烈に、激しく</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            感情が強くこもっており、激しい態度で何かを行う様子を表します。TOEFLの講義や会話のパートで、ある学説や提案に対して「猛烈に反対する（vehemently
+                            oppose）」といった表現でよく使われます。
                         </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">The local community vehemently opposed the
+                                construction of the
+                                chemical plant.</div>
+                            <div class="example-ja">地域社会は、化学工場の建設に猛烈に反対した。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" data-pos="noun" onclick="this.classList.toggle('open')">
+                    <div class="pos-badge">名詞</div>
+                    <h2 class="word">deterrent</h2>
+                    <div class="hint">▼ クリックして意味を表示 ▼</div>
+                    <div class="details">
+                        <div class="meaning">抑止力、妨害物</div>
+                        <div class="explanation">
+                            <div class="section-title">解説</div>
+                            誰かが何か（特に犯罪や望ましくない行動）をするのを思いとどまらせるもののこと。厳しい罰則や防犯カメラ、あるいは国家間の軍事力などが「抑止力として機能する（act
+                            as a
+                            deterrent）」という形で使われます。
+                        </div>
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">The presence of security cameras acts as a strong
+                                deterrent to
+                                theft
+                                in the store.</div>
+                            <div class="example-ja">防犯カメラの存在は、店内での窃盗に対する強力な抑止力として機能する。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="quiz-area">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <label class="checkbox-label" style="color: #f39c12; font-size: 1rem;">
+                    <input type="checkbox" id="quiz-only-star" onchange="startNewQuiz()">
+                    苦手(★)単語のみ出題
+                </label>
+            </div>
+            <div id="quiz-stats">
+                <div class="stats-text">
+                    正答率: <span id="accuracy-text">0</span>%
+                    <span class="stats-detail">(<span id="correct-count">0</span>問正解 / 全<span
+                            id="total-count">0</span>問)</span>
+                </div>
+                <div class="gauge-container">
+                    <div class="gauge-fill" id="accuracy-gauge"></div>
+                </div>
+            </div>
+            <div>この単語の意味は？</div>
+            <h2 id="quiz-question-word">Word</h2>
+            <div id="quiz-question-pos">品詞</div>
+
+            <div class="quiz-choices" id="quiz-choices-container">
+            </div>
+
+            <div id="quiz-result-msg"></div>
+            <button id="next-quiz-btn" onclick="startNewQuiz()">次の問題へ</button>
+        </div>
 
     </main>
 
@@ -5930,11 +6164,23 @@
             document.querySelectorAll('.card').forEach(card => {
                 const cleanWord = card.querySelector('.word').textContent.trim().split(/\s+/)[0];
 
+                // 英語例文から、スピーカーアイコンを除外した純粋なテキストを取り出す
+                const exampleEnClone = card.querySelector('.example-en').cloneNode(true);
+                const iconNode = exampleEnClone.querySelector('.speak-icon');
+                if (iconNode) iconNode.remove();
+                const cleanExampleEn = exampleEnClone.textContent.trim().replace(/\s+/g, ' ');
+
                 data.push({
                     word: cleanWord,
                     meaning: card.querySelector('.meaning').innerText,
                     pos: card.getAttribute('data-pos'),
-                    posLabel: card.querySelector('.pos-badge').innerText
+                    posLabel: card.querySelector('.pos-badge').innerText,
+                    isStarred: card.getAttribute('data-starred') === 'true',
+
+                    // ▼ 追加：解説と例文のデータを取得
+                    explanationHtml: card.querySelector('.explanation').innerHTML,
+                    exampleEn: cleanExampleEn,
+                    exampleJa: card.querySelector('.example-ja').innerText
                 });
             });
             return data;
@@ -5957,24 +6203,31 @@
                 return;
             }
 
+            // ▼ 追加：出題する単語の候補リストを作成 ▼
+            let questionPool = vocabList;
+            const onlyStarCheckbox = document.getElementById('quiz-only-star');
+
+            if (onlyStarCheckbox && onlyStarCheckbox.checked) {
+                questionPool = vocabList.filter(item => item.isStarred);
+                // 苦手な単語が1つもない場合の安全対策
+                if (questionPool.length === 0) {
+                    alert("苦手(★)に登録されている単語がありません。出題範囲を「すべて」に戻します。");
+                    onlyStarCheckbox.checked = false;
+                    questionPool = vocabList;
+                }
+            }
+
             document.getElementById('quiz-result-msg').innerText = '';
             document.getElementById('quiz-result-msg').className = '';
             document.getElementById('next-quiz-btn').style.display = 'none';
             const choicesContainer = document.getElementById('quiz-choices-container');
             choicesContainer.innerHTML = '';
 
-            currentAnswer = vocabList[Math.floor(Math.random() * vocabList.length)];
+            // questionPool（絞り込まれたリスト）から出題単語をランダムに選ぶ
+            currentAnswer = questionPool[Math.floor(Math.random() * questionPool.length)];
 
-            const cards = document.querySelectorAll('.card');
-            let isStarred = false;
-            cards.forEach(card => {
-                const cardWord = card.querySelector('.word').textContent.trim().split(/\s+/)[0];
-                if (cardWord === currentAnswer.word && card.getAttribute('data-starred') === 'true') {
-                    isStarred = true;
-                }
-            });
-
-            const starClass = isStarred ? 'quiz-star-icon active' : 'quiz-star-icon';
+            // 星の初期クラス（すでに苦手登録されていれば active をつける）※処理がスッキリしました！
+            const starClass = currentAnswer.isStarred ? 'quiz-star-icon active' : 'quiz-star-icon';
 
             document.getElementById('quiz-question-word').innerHTML = `
                 ${currentAnswer.word}
@@ -5985,6 +6238,7 @@
             speakWord(null, currentAnswer.word);
             document.getElementById('quiz-question-pos').innerText = currentAnswer.posLabel;
 
+            // 選択肢のダミーは「すべての単語（vocabList）」から選んでシャッフルする
             let choices = [currentAnswer];
             let samePosWords = vocabList.filter(item => item.pos === currentAnswer.pos && item.word !== currentAnswer.word);
             shuffleArray(samePosWords);
@@ -6017,26 +6271,49 @@
             allBtns.forEach(btn => btn.disabled = true);
 
             const msgDiv = document.getElementById('quiz-result-msg');
-            const correctSound = document.getElementById('sound-correct');
-            const wrongSound = document.getElementById('sound-wrong');
 
             totalAnswered++;
 
             if (isCorrect) {
                 totalCorrect++;
-
                 playSound('sound-correct');
-
                 clickedBtn.classList.add('correct');
                 msgDiv.innerText = "正解";
                 msgDiv.className = 'msg-correct';
             } else {
                 playSound('sound-wrong');
-
                 clickedBtn.classList.add('wrong');
-                msgDiv.innerHTML = `不正解<br><span style="color:#333; font-size:1rem; font-weight:normal;">正解は: <b>${currentAnswer.meaning}</b></span>`;
                 msgDiv.className = 'msg-wrong';
 
+                // 例文読み上げ用に、アポストロフィなどをエスケープ（無害化）する
+                const safeEn = currentAnswer.exampleEn.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+                // ▼ ここを大幅に修正：不正解時に解説と例文を表示させる
+                msgDiv.innerHTML = `
+                    <div style="margin-bottom: 0.5rem; font-weight: bold;">不正解</div>
+                    <div style="text-align: left; color: #333; border: 2px solid #e74c3c; border-radius: 8px; padding: 1.5rem; margin-top: 1rem;">
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #e74c3c; margin-bottom: 1rem;">
+                            正解は: ${currentAnswer.meaning}
+                        </div>
+
+                        <div class="explanation">
+                            ${currentAnswer.explanationHtml}
+                        </div>
+
+                        <div class="example">
+                            <div class="section-title">例文</div>
+                            <div class="example-en">
+                                ${currentAnswer.exampleEn}
+                                <span class="speak-icon" onclick="speakWord(event, '${safeEn}')">
+                                    <img src="icon-speaker.png" alt="発音" style="width: 28px; margin-left: 8px; vertical-align: middle;">
+                                </span>
+                            </div>
+                            <div class="example-ja">${currentAnswer.exampleJa}</div>
+                        </div>
+                    </div>
+                `;
+
+                // 正解のボタンを緑色に光らせる
                 allBtns.forEach(btn => {
                     if (btn.innerText === currentAnswer.meaning) {
                         btn.classList.add('correct');
@@ -6045,7 +6322,6 @@
             }
 
             updateStats();
-
             document.getElementById('next-quiz-btn').style.display = 'block';
         }
         function updateStats() {
@@ -6220,6 +6496,385 @@
             const iconEl = exampleEl.querySelector('.speak-icon');
             iconEl.addEventListener('click', function (e) {
                 speakWord(e, originalText);
+            });
+        });
+        // ----------------------------------------
+        // 9. ヘッダーの収録語数を自動更新する機能
+        // ----------------------------------------
+        function updateHeaderWordCount() {
+            // 単語帳のコンテナ内にあるカードの総数をカウント
+            const totalCards = document.querySelectorAll('#card-container > .card').length;
+            const countEl = document.getElementById('total-word-count');
+            if (countEl) {
+                countEl.innerText = totalCards;
+            }
+        }
+
+        // ページが読み込まれた瞬間に語数カウントを実行する
+        window.addEventListener('DOMContentLoaded', updateHeaderWordCount);
+
+        function toggleDarkMode() {
+            const isDark = document.getElementById('setting-dark-mode').checked;
+
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'false');
+            }
+        }
+        const darkMode = localStorage.getItem('darkMode');
+
+        if (darkMode === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('setting-dark-mode').checked = true;
+        }
+        // ----------------------------------------
+        // 10. 単語カードのドラッグ＆ドロップ並び替えと保存
+        // ----------------------------------------
+
+        // 並び順をローカルストレージに保存する関数
+        function saveCardOrder() {
+            const cards = document.querySelectorAll('#card-container > .card');
+            // 上から順番に英単語のテキストだけを抽出して配列にする
+            const order = Array.from(cards).map(card => {
+                return card.querySelector('.word').textContent.trim().split(/\s+/)[0];
+            });
+            localStorage.setItem('toeflCardOrder', JSON.stringify(order));
+        }
+
+        // 保存された並び順を復元する関数
+        function loadCardOrder() {
+            const savedOrder = localStorage.getItem('toeflCardOrder');
+            if (!savedOrder) return; // 保存データがなければ何もしない
+
+            const orderArray = JSON.parse(savedOrder);
+            const container = document.getElementById('card-container');
+            const cards = Array.from(container.querySelectorAll('.card'));
+
+            // 一旦すべてのカードを画面から外す
+            cards.forEach(card => container.removeChild(card));
+
+            // 1. 保存された順番通りにカードを戻す
+            orderArray.forEach(word => {
+                const targetCard = cards.find(card => card.querySelector('.word').textContent.trim().split(/\s+/)[0] === word);
+                if (targetCard) {
+                    container.appendChild(targetCard);
+                    // 戻したカードはリストから削除
+                    const index = cards.indexOf(targetCard);
+                    if (index > -1) cards.splice(index, 1);
+                }
+            });
+
+            // 2. 後からHTMLに追加された新しい単語カードがあれば、一番最後にくっつける
+            cards.forEach(card => container.appendChild(card));
+        }
+
+        // ページ読み込み時に並び順を復元し、ドラッグ＆ドロップを有効化する
+        window.addEventListener('DOMContentLoaded', function () {
+            // 最初に並び順を復元
+            loadCardOrder();
+
+            const container = document.getElementById('card-container');
+            if (container) {
+                // SortableJSを起動
+                Sortable.create(container, {
+                    animation: 250, // スルッと動くアニメーション速度（ミリ秒）
+                    delay: 200, // スマホでスクロールする時に誤作動しないよう、200ミリ秒長押しでドラッグ開始
+                    delayOnTouchOnly: true, // スマホ（タッチ操作）の時だけ長押しを必須にする
+                    ghostClass: 'sortable-ghost', // ドラッグ中につくCSSクラス
+                    onEnd: function (evt) {
+                        // ドロップして指を離した瞬間に、新しい順番を自動保存
+                        saveCardOrder();
+                        // 順番が変わったのでクイズの出題リスト（getVocabData）なども内部的に更新されます
+                    }
+                });
+            }
+        });
+        // ----------------------------------------
+        // 11. 類語（Synonyms）の自動追加機能
+        // ----------------------------------------
+
+        // 類語の辞書データ（超特大版）
+        const synonymsDict = {
+            "anomaly": "abnormality, exception, irregularity",
+            "pragmatic": "practical, realistic, sensible",
+            "alleviate": "relieve, mitigate, ease",
+            "lucrative": "profitable, rewarding, fruitful",
+            "corroborate": "confirm, substantiate, verify",
+            "inadvertently": "accidentally, unintentionally, unknowingly",
+            "predominantly": "mainly, mostly, primarily",
+            "advocate": "support, promote, champion",
+            "imperative": "crucial, essential, mandatory",
+            "catalyst": "stimulus, trigger, accelerator",
+            "simultaneously": "concurrently, at the same time",
+            "profound": "deep, significant, intense",
+            "coincide": "overlap, concur, synchronize",
+            "reverberation": "echo, consequence, repercussion",
+            "scrutinize": "examine, inspect, investigate",
+            "indispensable": "essential, necessary, vital",
+            "fluctuate": "vary, waver, oscillate",
+            "accumulate": "gather, collect, amass",
+            "abundant": "plentiful, copious, ample",
+            "compulsory": "mandatory, required, obligatory",
+            "enhance": "improve, boost, elevate",
+            "vulnerable": "susceptible, defenceless, exposed",
+            "virtually": "almost, practically, essentially",
+            "proliferate": "multiply, increase rapidly",
+            "ambiguous": "unclear, vague, obscure",
+            "reification": "objectification, embodiment",
+            "diminish": "decrease, reduce, lessen",
+            "advancement": "progress, development, improvement",
+            "superficial": "shallow, surface-level",
+            "precisely": "exactly, accurately, absolutely",
+            "sustain": "maintain, uphold, support",
+            "precedent": "example, standard, model",
+            "abrupt": "sudden, unexpected, hasty",
+            "initially": "originally, at first, fundamentally",
+            "exacerbate": "worsen, aggravate, intensify",
+            "consequently": "therefore, as a result, subsequently",
+            "rigorous": "strict, exact, stringent",
+            "encompass": "include, cover, surround",
+            "disparity": "inequality, gap, difference",
+            "thrive": "flourish, prosper, succeed",
+            "influx": "inflow, inundation, arrival",
+            "optimal": "ideal, best, most favorable",
+            "surpass": "exceed, outdo, transcend",
+            "apparatus": "equipment, device, machinery",
+            "endorse": "support, approve, back",
+            "pristine": "unspoiled, immaculate, pure",
+            "robust": "strong, vigorous, sturdy",
+            "integrate": "combine, merge, incorporate",
+            "adjacent": "neighboring, bordering, next to",
+            "abstruse": "obscure, profound, complex",
+            "anachronism": "misplacement in time",
+            "bolster": "strengthen, support, reinforce",
+            "cacophony": "noise, discord, dissonance",
+            "deference": "respect, reverence, obedience",
+            "efficacy": "effectiveness, efficiency, potency",
+            "exonerate": "clear, acquit, absolve",
+            "fastidious": "meticulous, exacting, fussy",
+            "gregarious": "sociable, outgoing, companionable",
+            "obfuscate": "confuse, complicate, obscure",
+            "panacea": "cure-all, universal remedy",
+            "recalcitrant": "stubborn, disobedient, defiant",
+            "sporadically": "occasionally, irregularly, randomly",
+            "spurious": "false, fake, counterfeit",
+            "taciturn": "silent, uncommunicative, quiet",
+            "unassailable": "undeniable, absolute, irrefutable",
+            "unequivocally": "clearly, unmistakably, absolutely",
+            "vacillate": "hesitate, waver, fluctuate",
+            "veracity": "truthfulness, accuracy, authenticity",
+            "wane": "decrease, decline, fade",
+            "milestone": "landmark, breakthrough, turning point",
+            "compile": "assemble, collect, gather",
+            "hypothesis": "theory, assumption, premise",
+            "converge": "meet, come together, intersect",
+            "intact": "undamaged, whole, unbroken",
+            "undergo": "experience, endure, go through",
+            "persist": "continue, endure, remain",
+            "discrete": "separate, distinct, individual",
+            "domain": "field, area, realm",
+            "infer": "deduce, conclude, derive",
+            "qualitative": "subjective, descriptive",
+            "coordinate": "organize, synchronize, harmonize",
+            "diverse": "various, different, varied",
+            "static": "unchanging, stationary, constant",
+            "dynamic": "active, changing, energetic",
+            "rigid": "stiff, strict, inflexible",
+            "paradox": "contradiction, puzzle, anomaly",
+            "invoke": "call upon, summon, cite",
+            "conceive": "imagine, think of, create",
+            "framework": "structure, outline, foundation",
+            "configuration": "arrangement, layout, format",
+            "denote": "indicate, mean, signify",
+            "simulate": "imitate, reproduce, replicate",
+            "innate": "inborn, natural, inherent",
+            "trigger": "cause, initiate, prompt",
+            "ultimately": "eventually, finally, fundamentally",
+            "magnitude": "size, extent, importance",
+            "interlocutor": "conversationalist, speaker",
+            "indigenous": "native, local, aboriginal",
+            "substantially": "significantly, considerably",
+            "mitigate": "alleviate, ease, lessen",
+            "demolish": "destroy, tear down, ruin",
+            "ubiquitous": "omnipresent, everywhere, universal",
+            "discrepancy": "inconsistency, difference, mismatch",
+            "subsequently": "later, afterward, following",
+            "proponent": "advocate, supporter, promoter",
+            "elucidate": "clarify, explain, illuminate",
+            "subtle": "slight, delicate, faint",
+            "underscore": "emphasize, highlight, stress",
+            "reverence": "respect, admiration, awe",
+            "erroneous": "incorrect, wrong, flawed",
+            "seemingly": "apparently, outwardly",
+            "differentiate": "distinguish, separate, discriminate",
+            "hegemony": "dominance, leadership, authority",
+            "internalize": "absorb, incorporate, adopt",
+            "sedentary": "inactive, sitting, desk-bound",
+            "indubitably": "undoubtedly, unquestionably",
+            "assimilate": "absorb, integrate, incorporate",
+            "idiosyncratic": "peculiar, unique, quirky",
+            "counteract": "neutralize, offset, negate",
+            "demographic": "population-related, societal",
+            "plausible": "believable, reasonable, credible",
+            "implicitly": "indirectly, tacitly, unspokenly",
+            "replicate": "duplicate, copy, reproduce",
+            "autonomy": "independence, self-rule, freedom",
+            "rudimentary": "basic, elementary, primitive",
+            "trajectory": "path, course, route",
+            "consolidate": "combine, strengthen, unify",
+            "feasible": "possible, practicable, viable",
+            "cognitive": "mental, intellectual",
+            "notably": "especially, particularly, significantly",
+            "conversely": "oppositely, vice versa, inversely",
+            "deterioration": "worsening, decline, degradation",
+            "hierarchy": "ranking, order, grading",
+            "foster": "encourage, nurture, cultivate",
+            "erratic": "unpredictable, irregular, inconsistent",
+            "incentive": "motivation, encouragement, stimulus",
+            "hinder": "obstruct, impede, hamper",
+            "consecutively": "successively, sequentially",
+            "delineate": "outline, describe, define",
+            "amalgamation": "mixture, combination, blend",
+            "surreptitiously": "secretly, stealthily, covertly",
+            "convoluted": "complicated, complex, intricate",
+            "esoteric": "obscure, mysterious, cryptic",
+            "transient": "temporary, short-lived, fleeting",
+            "ameliorate": "improve, better, upgrade",
+            "resilient": "tough, adaptable, robust",
+            "juxtaposition": "contrast, comparison",
+            "vindicate": "clear, justify, acquit",
+            "empirically": "practically, observably",
+            "tenable": "defensible, justifiable, plausible",
+            "precipitation": "rainfall, condensation",
+            "synthesize": "combine, integrate, incorporate",
+            "perishable": "easily spoiled, short-lived",
+            "perpetually": "constantly, endlessly, forever",
+            "dissolve": "melt, fade away, disintegrate",
+            "volatile": "unstable, unpredictable, explosive",
+            "exponentially": "rapidly, sharply",
+            "impediment": "obstacle, barrier, hindrance",
+            "demystify": "clarify, explain, decode",
+            "repercussion": "consequence, effect, aftermath",
+            "ephemeral": "fleeting, short-lived, passing",
+            "intrinsically": "fundamentally, inherently",
+            "demarcate": "separate, define, bound",
+            "salient": "prominent, notable, outstanding",
+            "preclude": "prevent, rule out, prohibit",
+            "capricious": "fickle, unpredictable, erratic",
+            "tenuously": "weakly, slightly, fragilely",
+            "reconcile": "harmonize, settle, resolve",
+            "amplify": "increase, magnify, intensify",
+            "pervasive": "widespread, ubiquitous, prevalent",
+            "invariably": "always, constantly, unfailingly",
+            "constrain": "restrict, limit, bound",
+            "equilibrium": "balance, stability, symmetry",
+            "adverse": "unfavorable, harmful, hostile",
+            "perpetuate": "maintain, preserve, prolong",
+            "viability": "feasibility, practicality",
+            "intricate": "complex, detailed, complicated",
+            "dichotomy": "division, contrast, split",
+            "paradoxically": "ironically, contradictorily",
+            "conundrum": "dilemma, puzzle, riddle",
+            "scarcity": "shortage, lack, deficiency",
+            "susceptible": "vulnerable, prone, sensitive",
+            "inevitably": "unavoidably, necessarily",
+            "concurrently": "simultaneously, at the same time",
+            "manifestation": "expression, display, sign",
+            "impermeable": "impassable, watertight",
+            "obliterate": "destroy, wipe out, erase",
+            "propensity": "tendency, inclination, leaning",
+            "redundant": "unnecessary, superfluous, extra",
+            "ostensibly": "apparently, seemingly, supposedly",
+            "perceive": "notice, recognize, observe",
+            "proliferation": "rapid increase, spread, expansion",
+            "obsolete": "outdated, outmoded, extinct",
+            "relinquish": "give up, surrender, abandon",
+            "remnants": "remains, traces, residues",
+            "stringent": "strict, rigorous, tight",
+            "profoundly": "deeply, intensely, deeply",
+            "jeopardize": "endanger, threaten, risk",
+            "contingency": "possibility, eventuality, emergency",
+            "comprise": "consist of, make up, compose",
+            "explicit": "clear, direct, specific",
+            "integral": "essential, fundamental, intrinsic",
+            "deduce": "infer, figure out, conclude",
+            "coherent": "logical, consistent, rational",
+            "deviate": "stray, diverge, differ",
+            "arbitrary": "random, subjective, erratic",
+            "bias": "prejudice, partiality, favoritism",
+            "obscure": "hide, conceal, cloud",
+            "mundane": "ordinary, routine, everyday",
+            "tentative": "provisional, unconfirmed, hesitant",
+            "analogous": "similar, comparable, parallel",
+            "precursor": "forerunner, predecessor, herald",
+            "prevalent": "common, widespread, frequent",
+            "extraneous": "irrelevant, unrelated, outside",
+            "intermittent": "sporadic, irregular, occasional",
+            "offset": "counterbalance, make up for, compensate",
+            "exploit": "utilize, take advantage of, harness",
+            "inherent": "innate, intrinsic, built-in",
+            "prominent": "conspicuous, important, famous",
+            "emit": "release, give off, discharge",
+            "trait": "characteristic, feature, attribute",
+            "flourish": "thrive, prosper, bloom",
+            "extract": "pull out, obtain, derive",
+            "unprecedented": "unparalleled, novel, exceptional",
+            "manipulate": "control, influence, handle",
+            "substantiate": "verify, prove, authenticate",
+            "elicit": "draw out, evoke, extract",
+            "culminate": "climax, result in, peak",
+            "conducive": "helpful, favorable, beneficial",
+            "deteriorate": "worsen, decline, degenerate",
+            "stagnate": "languish, stand still, idle",
+            "augment": "increase, supplement, enlarge",
+            "deplete": "exhaust, use up, drain",
+            "replenish": "refill, restore, reload",
+            "metabolism": "metabolic process, digestion",
+            "symbiosis": "mutualism, coexistence, cooperation",
+            "pathogen": "infectious agent, germ, virus",
+            "nocturnal": "night-active",
+            "terrestrial": "earthly, land-dwelling",
+            "aesthetic": "artistic, visually pleasing, beautiful",
+            "empirical": "observational, practical, factual",
+            "paradigm": "model, framework, pattern",
+            "consensus": "agreement, unanimity, harmony",
+            "artifact": "historical object, relic, antique",
+            "chronological": "sequential, consecutive, historical",
+            "bureaucracy": "administration, red tape, officialdom",
+            "scrutiny": "inspection, examination, analysis",
+            "spatial": "geographical, dimensional",
+            "seismic": "tectonic, earth-shattering",
+            "implication": "consequence, significance, suggestion",
+            "verify": "confirm, validate, prove",
+            "prolific": "productive, fruitful, abundant",
+            "allocate": "assign, distribute, designate",
+            "formidable": "intimidating, daunting, challenging",
+            "meticulously": "carefully, thoroughly, precisely",
+            "unwittingly": "unintentionally, accidentally, unknowingly",
+            "vehemently": "fiercely, strongly, passionately",
+            "deterrent": "obstacle, discouragement, hindrance"
+        };
+
+        // 画面が読み込まれた時に、全カードをチェックして類語を挿入する
+        window.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('#card-container > .card').forEach(card => {
+                // カードの英単語を取得（アイコンや空白を除外）
+                const wordText = card.querySelector('.word').textContent.trim().split(/\s+/)[0].toLowerCase();
+
+                // 辞書データの中にその単語が存在していれば、類語バッジを作成
+                if (synonymsDict[wordText]) {
+                    const meaningEl = card.querySelector('.meaning');
+                    const synDiv = document.createElement('div');
+                    synDiv.className = 'synonyms-badge';
+                    synDiv.innerText = `類語: ${synonymsDict[wordText]}`;
+
+                    // 意味（.meaning）のすぐ下にバッジを挿入する
+                    meaningEl.style.marginBottom = '0.5rem';
+                    meaningEl.parentNode.insertBefore(synDiv, meaningEl.nextSibling);
+                }
             });
         });
     </script>
