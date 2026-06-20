@@ -48,8 +48,8 @@
         }
 
         .mode-tab.active {
-            color: #3498db;
-            border-bottom: 3px solid #3498db;
+            color: #072259;
+            border-bottom: 3px solid #072259;
         }
 
         .mode-tab:hover:not(.active) {
@@ -69,8 +69,8 @@
 
         .filter-btn {
             background-color: #fff;
-            border: 2px solid #3498db;
-            color: #3498db;
+            border: 2px solid #072259;
+            color: #072259;
             padding: 0.5rem 1rem;
             margin: 0.2rem;
             border-radius: 20px;
@@ -82,7 +82,7 @@
 
         .filter-btn.active,
         .filter-btn:hover {
-            background-color: #3498db;
+            background-color: #072259;
             color: #fff;
         }
 
@@ -379,7 +379,7 @@
 
         .quiz-choice-btn:hover:not(:disabled) {
             background-color: #e8f4fd;
-            border-color: #3498db;
+            border-color: #072259;
         }
 
         .quiz-choice-btn:disabled {
@@ -414,7 +414,7 @@
         }
 
         #next-quiz-btn {
-            background-color: #3498db;
+            background-color: #072259;
             color: #fff;
             border: none;
             padding: 0.8rem 2rem;
@@ -571,7 +571,7 @@
         }
 
         #searchInput:focus {
-            border-color: #3498db;
+            border-color: #072259;
             box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
         }
 
@@ -716,8 +716,8 @@
         }
 
         body.dark-mode .mode-tab.active {
-            color: #4dabff;
-            border-bottom-color: #4dabff;
+            color: #2879bf;
+            border-bottom-color: #2879bf;
         }
 
         body.dark-mode .card,
@@ -753,13 +753,13 @@
 
         body.dark-mode .filter-btn {
             background-color: #1e1e1e;
-            color: #4dabff;
-            border-color: #4dabff;
+            color: #2879bf;
+            border-color: #2879bf;
         }
 
         body.dark-mode .filter-btn.active,
         body.dark-mode .filter-btn:hover {
-            background-color: #4dabff;
+            background-color: #2879bf;
             color: #ffffff;
         }
 
@@ -796,7 +796,7 @@
             /* カードを半透明にする */
             background-color: #e8f4fd;
             /* 背景を薄い青に */
-            border: 2px dashed #3498db;
+            border: 2px dashed #072259;
             /* 青い点線で囲む */
             transform: scale(0.98);
             /* ほんの少し小さくする */
@@ -804,7 +804,7 @@
 
         body.dark-mode .sortable-ghost {
             background-color: #2a3b4c;
-            border-color: #4dabff;
+            border-color: #2879bf;
         }
 
         /* ----------------------------------------
@@ -825,6 +825,156 @@
         body.dark-mode .synonyms-badge {
             background-color: #4a3b1c;
             color: #f1c40f;
+        }
+
+        /* ----------------------------------------
+           学習統計画面のデザイン
+        ---------------------------------------- */
+        #stats-area {
+            padding-top: 1rem;
+        }
+
+        .stats-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-card h3 {
+            margin-top: 0;
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background-color: #f9fbfc;
+            border-radius: 8px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border: 1px solid #ecf0f1;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .reset-stats-btn {
+            background-color: #fff;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .reset-stats-btn:hover {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+
+        /* --- ダークモード対応 --- */
+        body.dark-mode #stats-area h2 {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .stats-card {
+            background-color: #1e1e1e;
+        }
+
+        body.dark-mode .stats-card h3 {
+            color: #e0e0e0;
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode .stat-box {
+            background-color: #2a2a2a;
+            border-color: #444;
+        }
+
+        body.dark-mode .stat-value {
+            color: #4dabff;
+        }
+
+        body.dark-mode .reset-stats-btn {
+            background-color: #1e1e1e;
+            border-color: #e74c3c;
+        }
+
+        body.dark-mode .reset-stats-btn:hover {
+            background-color: #e74c3c;
+        }
+
+        /* ----------------------------------------
+        間違えやすい単語ランキングのデザイン
+        ---------------------------------------- */
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 1.1rem;
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+            /* 最後だけ線を消す */
+        }
+
+        .ranking-word {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .ranking-count {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .ranking-empty {
+            text-align: center;
+            color: #7f8c8d;
+            padding: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* --- ダークモード対応 --- */
+        body.dark-mode .ranking-item {
+            border-bottom-color: #333;
+        }
+
+        body.dark-mode .ranking-word {
+            color: #ffffff;
         }
     </style>
 </head>
@@ -881,9 +1031,52 @@
     <div class="mode-tabs">
         <div class="mode-tab active" id="tab-vocab" onclick="switchMode('vocab')">単語帳</div>
         <div class="mode-tab" id="tab-quiz" onclick="switchMode('quiz')">クイズ</div>
+        <div class="mode-tab" id="tab-stats" onclick="switchMode('stats')">統計</div>
     </div>
 
     <main>
+        <div id="stats-area" style="display: none;">
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 2rem;">学習統計</h2>
+
+            <div class="stats-card">
+                <h3>クイズ累積成績</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="cumulative-accuracy">0%</div>
+                        <div class="stat-label">累積正答率</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value"><span id="cumulative-correct" style="color: #2ecc71;">0</span> / <span
+                                id="cumulative-total">0</span></div>
+                        <div class="stat-label">正解数 / 解答数</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card" style="margin-top: 1.5rem;">
+                <h3>単語帳ステータス</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="total-words-stat">0</div>
+                        <div class="stat-label">総収録語数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="starred-words-stat" style="color: #f39c12;">0</div>
+                        <div class="stat-label">苦手(★)単語数</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card" style="margin-top: 1.5rem;">
+                <h3>間違えやすい単語トップ5</h3>
+                <ul id="mistake-ranking-list" class="ranking-list">
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="reset-stats-btn" onclick="resetCumulativeStats()">累積データをリセット</button>
+            </div>
+        </div>
         <div id="vocab-area">
 
 
@@ -6138,17 +6331,28 @@
         // 2. モード切り替え機能
         // ----------------------------------------
         function switchMode(mode) {
+            // 全タブのアクティブを解除
             document.getElementById('tab-vocab').classList.remove('active');
             document.getElementById('tab-quiz').classList.remove('active');
+            document.getElementById('tab-stats').classList.remove('active'); // 追加
+
+            // 選択されたタブをアクティブにする
             document.getElementById(`tab-${mode}`).classList.add('active');
 
+            // すべてのエリアを非表示にする
+            document.getElementById('vocab-area').style.display = 'none';
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('stats-area').style.display = 'none'; // 追加
+
+            // 選択されたエリアだけを表示し、必要な処理を実行する
             if (mode === 'vocab') {
                 document.getElementById('vocab-area').style.display = 'block';
-                document.getElementById('quiz-area').style.display = 'none';
             } else if (mode === 'quiz') {
-                document.getElementById('vocab-area').style.display = 'none';
                 document.getElementById('quiz-area').style.display = 'block';
                 startNewQuiz();
+            } else if (mode === 'stats') {
+                document.getElementById('stats-area').style.display = 'block';
+                renderStats(); // 統計画面を開いた瞬間に最新データを描画する
             }
         }
 
@@ -6319,8 +6523,10 @@
                         btn.classList.add('correct');
                     }
                 });
+                recordMistake(currentAnswer.word);
             }
 
+            saveCumulativeStats(isCorrect);
             updateStats();
             document.getElementById('next-quiz-btn').style.display = 'block';
         }
@@ -6340,7 +6546,7 @@
                 gaugeFill.style.setProperty('--gauge-color-1', '#2ecc71');
                 gaugeFill.style.setProperty('--gauge-color-2', '#27ae60');
             } else if (accuracy >= 50) {
-                gaugeFill.style.setProperty('--gauge-color-1', '#3498db');
+                gaugeFill.style.setProperty('--gauge-color-1', '#072259');
                 gaugeFill.style.setProperty('--gauge-color-2', '#2980b9');
             } else {
                 gaugeFill.style.setProperty('--gauge-color-1', '#e74c3c');
@@ -6877,6 +7083,96 @@
                 }
             });
         });
+        // ----------------------------------------
+        // 12. 累積学習統計とランキングの管理機能
+        // ----------------------------------------
+
+        // 累積データを取得する
+        function getCumulativeStats() {
+            const saved = localStorage.getItem('toeflCumulativeStats');
+            return saved ? JSON.parse(saved) : { totalAnswered: 0, totalCorrect: 0 };
+        }
+
+        function saveCumulativeStats(isCorrect) {
+            const stats = getCumulativeStats();
+            stats.totalAnswered += 1;
+            if (isCorrect) stats.totalCorrect += 1;
+            localStorage.setItem('toeflCumulativeStats', JSON.stringify(stats));
+        }
+
+        // ▼ 追加：ミスの回数を取得・記録する
+        function getMistakeStats() {
+            const saved = localStorage.getItem('toeflMistakeStats');
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        function recordMistake(word) {
+            const mistakes = getMistakeStats();
+            // すでに間違えたことがあれば+1、初めてなら1にする
+            mistakes[word] = (mistakes[word] || 0) + 1;
+            localStorage.setItem('toeflMistakeStats', JSON.stringify(mistakes));
+        }
+
+        // 統計画面を描画する
+        function renderStats() {
+            const stats = getCumulativeStats();
+            const accuracy = stats.totalAnswered === 0 ? 0 : Math.round((stats.totalCorrect / stats.totalAnswered) * 100);
+
+            document.getElementById('cumulative-accuracy').innerText = accuracy + '%';
+            document.getElementById('cumulative-correct').innerText = stats.totalCorrect;
+            document.getElementById('cumulative-total').innerText = stats.totalAnswered;
+
+            const totalCards = document.querySelectorAll('#card-container > .card').length;
+            const starredCards = getStarredWords().length;
+            document.getElementById('total-words-stat').innerText = totalCards;
+            document.getElementById('starred-words-stat').innerText = starredCards;
+
+            // ▼ 追加：ランキングを描画する ▼
+            const mistakes = getMistakeStats();
+            const rankingList = document.getElementById('mistake-ranking-list');
+            rankingList.innerHTML = '';
+
+            // オブジェクトを配列に変換し、ミス回数が多い順に並び替え
+            const sortedMistakes = Object.entries(mistakes).sort((a, b) => b[1] - a[1]);
+
+            if (sortedMistakes.length === 0) {
+                rankingList.innerHTML = '<li class="ranking-empty">まだ間違えた単語はありません。全問正解中です！</li>';
+            } else {
+                // 上位5件（トップ5）を取り出してリストに追加
+                const top5 = sortedMistakes.slice(0, 5);
+                top5.forEach((item, index) => {
+                    const word = item[0];
+                    const count = item[1];
+                    const li = document.createElement('li');
+                    li.className = 'ranking-item';
+
+                    // 1位、2位、3位にはメダルの色をつける（任意）
+                    let rankColor = '#7f8c8d';
+                    if (index === 0) rankColor = '#f1c40f'; // 金
+                    if (index === 1) rankColor = '#95a5a6'; // 銀
+                    if (index === 2) rankColor = '#cd7f32'; // 銅
+
+                    li.innerHTML = `
+                        <div>
+                            <span style="color: ${rankColor}; font-weight: bold; margin-right: 12px; font-size: 1.2rem;">${index + 1}</span>
+                            <span class="ranking-word">${word}</span>
+                        </div>
+                        <div class="ranking-count">${count}回</div>
+                    `;
+                    rankingList.appendChild(li);
+                });
+            }
+        }
+
+        // データをリセットする機能
+        function resetCumulativeStats() {
+            if (confirm("本当に累積データとランキングをリセットしますか？\n（※単語帳の★マークは消えません）")) {
+                localStorage.setItem('toeflCumulativeStats', JSON.stringify({ totalAnswered: 0, totalCorrect: 0 }));
+                // ミスの記録も空っぽにして保存
+                localStorage.setItem('toeflMistakeStats', JSON.stringify({}));
+                renderStats();
+            }
+        }
     </script>
     <audio id="sound-open" src="open.mp3" preload="auto"></audio>
     <audio id="sound-correct" src="correct.mp3" preload="auto"></audio>
