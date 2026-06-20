@@ -3919,48 +3919,43 @@
         });
 
         // ----------------------------------------
-        // 5. 発音読み上げ (Text-to-Speech) 機能（スマホ対応強化版）
+        // 5. 発音読み上げ (Text-to-Speech) 機能（Android安定版）
         // ----------------------------------------
-        // ① スマホの「勝手にメモリから消去されるバグ」を防ぐため、外側に変数を置く
-        let currentUtterance = null;
+        let currentUtterance = null; // メモリ消去対策
 
-        // ② スマホ向けに、ページを開いた時点で音声データをあらかじめロードしておく
+        // 事前に音声リストを読み込んでおく
         if ('speechSynthesis' in window) {
             window.speechSynthesis.getVoices();
-            // iOS Safari向けの読み込みトリガー
-            window.speechSynthesis.onvoiceschanged = function () {
-                window.speechSynthesis.getVoices();
-            };
         }
 
         function speakWord(event, text) {
             if (event) event.stopPropagation();
 
             if ('speechSynthesis' in window) {
-                // 前の音声をキャンセル
+                // 1. まず前の音声を確実にキャンセル
                 window.speechSynthesis.cancel();
 
-                // ③ キャンセル直後に再生すると無音になるスマホのバグを防ぐため、50ミリ秒だけ待つ
-                setTimeout(() => {
-                    currentUtterance = new SpeechSynthesisUtterance(text);
-                    currentUtterance.lang = 'en-US';
-                    currentUtterance.rate = appSettings.speechRate;
+                // 2. すぐに新しい音声データをセットする（setTimeoutは使わない）
+                currentUtterance = new SpeechSynthesisUtterance(text);
+                currentUtterance.lang = 'en-US';
 
-                    // ④ スマホ内で確実な「英語のネイティブスピーカー」を探して割り当てる
-                    const voices = window.speechSynthesis.getVoices();
-                    const enVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US') || voices.find(v => v.lang.startsWith('en'));
-                    if (enVoice) {
-                        currentUtterance.voice = enVoice;
-                    }
+                // 念のため、設定値が空だった場合は 0.9 になるように安全対策
+                currentUtterance.rate = appSettings.speechRate || 0.9;
 
-                    window.speechSynthesis.speak(currentUtterance);
-                }, 50);
+                // 3. Androidの中にある英語の声をセットする
+                const voices = window.speechSynthesis.getVoices();
+                const enVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en_US'));
+                if (enVoice) {
+                    currentUtterance.voice = enVoice;
+                }
+
+                // 4. そのままダイレクトに再生
+                window.speechSynthesis.speak(currentUtterance);
 
             } else {
                 console.log("お使いのブラウザは音声読み上げに対応していません。");
             }
         }
-
         // 単語帳の全カードの英単語に自作画像アイコンを自動追加する
         document.querySelectorAll('.card .word').forEach(wordEl => {
             const originalWord = wordEl.innerText;
