@@ -3919,17 +3919,43 @@
         });
 
         // ----------------------------------------
-        // 5. 発音読み上げ (Text-to-Speech) 機能
+        // 5. 発音読み上げ (Text-to-Speech) 機能（スマホ対応強化版）
         // ----------------------------------------
+        // ① スマホの「勝手にメモリから消去されるバグ」を防ぐため、外側に変数を置く
+        let currentUtterance = null;
+
+        // ② スマホ向けに、ページを開いた時点で音声データをあらかじめロードしておく
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+            // iOS Safari向けの読み込みトリガー
+            window.speechSynthesis.onvoiceschanged = function () {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
         function speakWord(event, text) {
             if (event) event.stopPropagation();
 
             if ('speechSynthesis' in window) {
+                // 前の音声をキャンセル
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
-                utterance.rate = appSettings.speechRate;
-                window.speechSynthesis.speak(utterance);
+
+                // ③ キャンセル直後に再生すると無音になるスマホのバグを防ぐため、50ミリ秒だけ待つ
+                setTimeout(() => {
+                    currentUtterance = new SpeechSynthesisUtterance(text);
+                    currentUtterance.lang = 'en-US';
+                    currentUtterance.rate = appSettings.speechRate;
+
+                    // ④ スマホ内で確実な「英語のネイティブスピーカー」を探して割り当てる
+                    const voices = window.speechSynthesis.getVoices();
+                    const enVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US') || voices.find(v => v.lang.startsWith('en'));
+                    if (enVoice) {
+                        currentUtterance.voice = enVoice;
+                    }
+
+                    window.speechSynthesis.speak(currentUtterance);
+                }, 50);
+
             } else {
                 console.log("お使いのブラウザは音声読み上げに対応していません。");
             }
